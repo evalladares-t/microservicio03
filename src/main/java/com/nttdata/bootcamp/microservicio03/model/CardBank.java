@@ -1,6 +1,5 @@
 package com.nttdata.bootcamp.microservicio03.model;
 
-import java.time.YearMonth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

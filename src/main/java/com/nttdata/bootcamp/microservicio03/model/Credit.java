@@ -24,5 +24,5 @@ public class Credit {
   private BigDecimal amountAvailable;
   private CardBank cardBank;
   private Boolean business;
-  private Boolean Active;
+  private Boolean active;
 }

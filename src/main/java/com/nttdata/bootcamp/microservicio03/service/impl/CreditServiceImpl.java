@@ -8,10 +8,7 @@ import com.nttdata.bootcamp.microservicio03.repository.CreditRepository;
 import com.nttdata.bootcamp.microservicio03.service.CreditService;
 import com.nttdata.bootcamp.microservicio03.utils.constant.ErrorCode;
 import com.nttdata.bootcamp.microservicio03.utils.exception.OperationNoCompletedException;
-
 import java.lang.reflect.Field;
-import java.time.YearMonth;
-import java.util.Locale;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,8 +47,7 @@ public class CreditServiceImpl implements CreditService {
               return validateCreateCredit(credit, creditRepository.findByCustomerId(customerId))
                   .flatMap(
                       allowed -> {
-                        if (allowed
-                            && validateCustomerTypeAndCreditType(credit, customer)) {
+                        if (allowed && validateCustomerTypeAndCreditType(credit, customer)) {
                           setCommonCreditProperties(credit, customer);
                           return creditRepository.insert(credit);
                         }
@@ -66,10 +62,12 @@ public class CreditServiceImpl implements CreditService {
   private Mono<Boolean> validateCreateCredit(Credit credit, Flux<Credit> existingCredits) {
 
     if (credit.getCreditType() == CreditType.CARD_BANK) {
-      if (credit.getCardBank() != null){
+      if (credit.getCardBank() != null) {
         return Mono.just(true);
       }
-      return Mono.error(new OperationNoCompletedException(ErrorCode.CARD_MISSING.getCode(),ErrorCode.CARD_MISSING.getMessage()));
+      return Mono.error(
+          new OperationNoCompletedException(
+              ErrorCode.CARD_MISSING.getCode(), ErrorCode.CARD_MISSING.getMessage()));
     }
 
     if (credit.getCreditType() == CreditType.PERSONAL) {
@@ -84,14 +82,16 @@ public class CreditServiceImpl implements CreditService {
   }
 
   private Boolean validateCustomerTypeAndCreditType(Credit credit, Customer customer) {
-    if(credit.getCreditType().getDescription().equals(CreditType.BUSINESS.getDescription()) || credit.getCreditType().getDescription().equals(CreditType.PERSONAL.getDescription())){
+    if (credit.getCreditType().getDescription().equals(CreditType.BUSINESS.getDescription())
+        || credit.getCreditType().getDescription().equals(CreditType.PERSONAL.getDescription())) {
       return credit
-              .getCreditType()
-              .getDescription()
-              .equals(customer.getCustomerType().getDescription());
+          .getCreditType()
+          .getDescription()
+          .equals(customer.getCustomerType().getDescription());
     }
     return true;
   }
+
   @Override
   public Mono<Credit> findById(String creditIdId) {
     return creditRepository.findById(creditIdId);
@@ -106,65 +106,65 @@ public class CreditServiceImpl implements CreditService {
   public Mono<Credit> update(Credit credit, String creditIdId) {
     log.info("Update a credit in the service.");
     return creditRepository
-            .findById(creditIdId)
-            .flatMap(
-                    customerDB -> {
-                      credit.setId(customerDB.getId());
-                      return creditRepository.save(credit);
-                    })
-            .switchIfEmpty(
-                    Mono.error(
-                            new OperationNoCompletedException(
-                                    ErrorCode.CREDIT_NO_UPDATE.getCode(),
-                                    ErrorCode.CREDIT_NO_UPDATE.getMessage())));
+        .findById(creditIdId)
+        .flatMap(
+            customerDB -> {
+              credit.setId(customerDB.getId());
+              return creditRepository.save(credit);
+            })
+        .switchIfEmpty(
+            Mono.error(
+                new OperationNoCompletedException(
+                    ErrorCode.CREDIT_NO_UPDATE.getCode(),
+                    ErrorCode.CREDIT_NO_UPDATE.getMessage())));
   }
 
   @Override
   public Mono<Credit> change(Credit credit, String creditIdId) {
     log.info("Change a credit in the service.");
     return creditRepository
-            .findById(creditIdId)
-            .flatMap(
-                    entidadExistente -> {
-                      // Iterar sobre los campos del objeto entidadExistente
-                      Field[] fields = credit.getClass().getDeclaredFields();
-                      for (Field field : fields) {
-                        if ("id".equals(field.getName())) {
-                          continue; // Saltar el campo 'id'
-                        }
-                        field.setAccessible(true); // Para acceder a campos privados
-                        try {
-                          // Verificar si el valor del campo en entidadParcial no es null
-                          Object value = field.get(credit);
-                          if (value != null) {
-                            // Actualizar el campo correspondiente en entidadExistente
-                            ReflectionUtils.setField(field, entidadExistente, value);
-                          }
-                        } catch (IllegalAccessException e) {
-                          e.printStackTrace(); // Manejo de errores si hay problemas con la reflexión
-                        }
-                      }
-                      // Guardar la entidad modificada
-                      return creditRepository.save(entidadExistente);
-                    })
-            .switchIfEmpty(
-                    Mono.error(
-                            new OperationNoCompletedException(
-                                    ErrorCode.CREDIT_NO_UPDATE.getCode(),
-                                    ErrorCode.CREDIT_NO_UPDATE.getMessage())));
+        .findById(creditIdId)
+        .flatMap(
+            entidadExistente -> {
+              // Iterar sobre los campos del objeto entidadExistente
+              Field[] fields = credit.getClass().getDeclaredFields();
+              for (Field field : fields) {
+                if ("id".equals(field.getName())) {
+                  continue; // Saltar el campo 'id'
+                }
+                field.setAccessible(true); // Para acceder a campos privados
+                try {
+                  // Verificar si el valor del campo en entidadParcial no es null
+                  Object value = field.get(credit);
+                  if (value != null) {
+                    // Actualizar el campo correspondiente en entidadExistente
+                    ReflectionUtils.setField(field, entidadExistente, value);
+                  }
+                } catch (IllegalAccessException e) {
+                  e.printStackTrace(); // Manejo de errores si hay problemas con la reflexión
+                }
+              }
+              // Guardar la entidad modificada
+              return creditRepository.save(entidadExistente);
+            })
+        .switchIfEmpty(
+            Mono.error(
+                new OperationNoCompletedException(
+                    ErrorCode.CREDIT_NO_UPDATE.getCode(),
+                    ErrorCode.CREDIT_NO_UPDATE.getMessage())));
   }
 
   @Override
   public Mono<Credit> remove(String creditIdId) {
     return creditRepository
-            .findById(creditIdId)
-            .flatMap(p -> creditRepository.deleteById(p.getId()).thenReturn(p));
+        .findById(creditIdId)
+        .flatMap(p -> creditRepository.deleteById(p.getId()).thenReturn(p));
   }
 
   private void setCommonCreditProperties(Credit credit, Customer customer) {
     Random numberRandom = new Random();
 
-    if(credit.getCreditType().equals(CreditType.CARD_BANK)){
+    if (credit.getCreditType().equals(CreditType.CARD_BANK)) {
       credit.getCardBank().setCardNumber(generateCardNumber(numberRandom));
     }
     credit.setCurrency("SOLES");
