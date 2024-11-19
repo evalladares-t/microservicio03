@@ -1,6 +1,5 @@
 package com.nttdata.bootcamp.microservicio03.model;
 
-import java.time.YearMonth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +9,11 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardBank {
+public class Customer {
 
-  private String cardNumber;
-  private String yearExpire;
-  private String monthExpire;
-  private String cvv;
-  private Boolean active;
+  private String id;
+  private CustomerType customerType;
+  private String firstName;
+  private String lastName;
+  private Boolean isActive;
 }

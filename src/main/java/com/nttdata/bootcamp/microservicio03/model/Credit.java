@@ -17,11 +17,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Credit {
   @Id private String id = UUID.randomUUID().toString();
   private String creditNumber;
-  private String customer;
+  private String customerId;
   private CreditType creditType;
   private String currency;
   private BigDecimal creditLimit;
   private BigDecimal amountAvailable;
   private CardBank cardBank;
-  private Boolean active;
+  private Boolean business;
+  private Boolean Active;
 }
