@@ -197,4 +197,9 @@ public class CreditServiceImpl implements CreditService {
         .retrieve()
         .bodyToMono(Customer.class);
   }
+
+  @Override
+  public Flux<Credit> findByCustomerId(String id) {
+    return creditRepository.findByCustomerId(id);
+  }
 }

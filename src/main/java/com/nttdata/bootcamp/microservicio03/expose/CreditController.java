@@ -76,4 +76,10 @@ public class CreditController {
         .flatMap(credit -> Mono.just(ResponseEntity.ok(credit)))
         .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
   }
+
+  @GetMapping({"/customer/{id}/", "/customer/{id}"})
+  public Flux<Credit> customerCredits(@PathVariable("id") String customerId) {
+    log.info("List all accounts in the controller.");
+    return creditService.findByCustomerId(customerId);
+  }
 }

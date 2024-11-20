@@ -17,4 +17,6 @@ public interface CreditService {
   Mono<Credit> change(Credit credit, String creditIdId);
 
   Mono<Credit> remove(String creditIdId);
+
+  Flux<Credit> findByCustomerId(String id);
 }
