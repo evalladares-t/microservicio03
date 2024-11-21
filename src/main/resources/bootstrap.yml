@@ -1,13 +1,6 @@
 
-application:
-  endpoints:
-    url: http://localhost:8081/api/
-
 spring:
   application:
     name: microservicio03
-  cloud:
-    config:
-      uri: http://localhost:8888
-      username: root
-      password: pr0y3ct1
+  profiles:
+    active: local
